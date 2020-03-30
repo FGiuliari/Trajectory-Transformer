@@ -2,6 +2,11 @@
 This is the code for the paper **<a href="https://arxiv.org/abs/2003.08111">Transformer Networks for Trajectory Forecasting</a>**
 
 
+
+## Code
+
+The code will be available soon.
+
 ## Requirements
   - Pytorch 1.0+
   - Numpy
@@ -9,7 +14,6 @@ This is the code for the paper **<a href="https://arxiv.org/abs/2003.08111">Tran
   - Tensorboard
 
 
-If you find this code useful in your research then please cite
 ```
 @misc{giuliari2020transformer,
     title={Transformer Networks for Trajectory Forecasting},
