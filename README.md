@@ -88,11 +88,16 @@ If you use the code please cite our paper.
 
 
 ## TODO
-- [ ] Add BERT
+- [x] Add BERT
+- [ ] Add QuantizedBert
 - [ ] Upload Pretrained-Models
 
 ## Changelog
-
+ - 27/04
+   - Added Bert
+   - Renamed the training files to make more sense
+   - fixed some issues with the individualTF
  - 10/04 
    - Uploaded the code for the Individual and QuantizedTF
+  
 
