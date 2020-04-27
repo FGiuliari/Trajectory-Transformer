@@ -22,7 +22,7 @@ from torch.utils.tensorboard import SummaryWriter
 def main():
     parser=argparse.ArgumentParser(description='Train the individual Transformer model')
     parser.add_argument('--dataset_folder',type=str,default='datasets')
-    parser.add_argument('--dataset_name',type=str,default='test')
+    parser.add_argument('--dataset_name',type=str,default='zara1')
     parser.add_argument('--obs',type=int,default=8)
     parser.add_argument('--preds',type=int,default=12)
     parser.add_argument('--emb_size',type=int,default=512)
@@ -99,10 +99,8 @@ def main():
                                                               args.preds, delim=args.delim, train=True,
                                                               verbose=args.verbose)
 
-        test_dataset,_ =  baselineUtils.create_dataset(args.dataset_folder,args.dataset_name,0,args.obs,args.preds,delim=args.delim,train=False,eval=True,verbose=args.verbose)
+    test_dataset,_ =  baselineUtils.create_dataset(args.dataset_folder,args.dataset_name,0,args.obs,args.preds,delim=args.delim,train=False,eval=True,verbose=args.verbose)
 
-    mat = scipy.io.loadmat(os.path.join(args.dataset_folder, args.dataset_name, "clusters.mat"))
-    clusters=mat['centroids']
 
 
 
@@ -208,8 +206,8 @@ def main():
                                                                                                                 :, -1:,
                                                                                                                 0:2].cpu().numpy()
                 pr.append(preds_tr_b)
-                print("test epoch %03i/%03i  batch %04i / %04i" % (
-                    epoch, args.max_epoch, id_b, len(test_dl)))
+                print("val epoch %03i/%03i  batch %04i / %04i" % (
+                    epoch, args.max_epoch, id_b, len(val_dl)))
 
 
             peds = np.concatenate(peds, 0)
@@ -275,7 +273,7 @@ def main():
                 # log.add_scalar('eval/DET_mad', mad, epoch)
                 # log.add_scalar('eval/DET_fad', fad, epoch)
 
-                scipy.io.savemat(f"output/Individual/{args.dataset_name}_det_{epoch}.mat",
+                scipy.io.savemat(f"output/Individual/{args.dataset_name}/det_{epoch}.mat",
                                  {'input': inp, 'gt': gt, 'pr': pr, 'peds': peds, 'frames': frames, 'dt': dt,
                                   'dt_names': dt_names})
 
