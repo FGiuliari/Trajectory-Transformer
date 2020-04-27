@@ -27,7 +27,7 @@ To train just run the *train_individual.py* with different parameters
 
 example: to train on the data for eth
 ```
-CUDA_VISIBLE_DEVICES python train_individual.py --dataset_name eth --name eth --max_epoch --batch_size 100 
+CUDA_VISIBLE_DEVICES python train_individualTF.py --dataset_name eth --name eth --max_epoch --batch_size 100 
 ```
 
 ### QuantizedTF
@@ -49,7 +49,7 @@ After that put the clusters.mat inside the appropriate dataset folder.
 Run *ClassifyTF.py*
 
 ```
-CUDA_VISIBLE_DEVICES=0 python classifyTF.py --dataset_name zara1 --name zara1 --batch_size 1024
+CUDA_VISIBLE_DEVICES=0 python train_quantizedTF.py --dataset_name zara1 --name zara1 --batch_size 1024
 ```
 
 ### Step 3: Evaluate Best-of-N
@@ -57,7 +57,7 @@ Run *test_class.py* with the parameters for the dataset_name, the name of the tr
 
 
 ```
-CUDA_VISIBLE_DEVICES=0 python test_class.py --dataset_name eth --name eth --batch_size 1024 --epoch 00030 --num_samples 20
+CUDA_VISIBLE_DEVICES=0 python test_quantizedTF.py --dataset_name eth --name eth --batch_size 1024 --epoch 00030 --num_samples 20
 ```
 
 
