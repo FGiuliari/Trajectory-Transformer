@@ -273,7 +273,7 @@ def main():
                 # log.add_scalar('eval/DET_mad', mad, epoch)
                 # log.add_scalar('eval/DET_fad', fad, epoch)
 
-                scipy.io.savemat(f"output/Individual/{args.dataset_name}/det_{epoch}.mat",
+                scipy.io.savemat(f"output/Individual/{args.name}/det_{epoch}.mat",
                                  {'input': inp, 'gt': gt, 'pr': pr, 'peds': peds, 'frames': frames, 'dt': dt,
                                   'dt_names': dt_names})
 
