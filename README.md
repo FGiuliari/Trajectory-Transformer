@@ -89,10 +89,12 @@ If you use the code please cite our paper.
 
 ## TODO
 - [x] Add BERT
-- [ ] Add QuantizedBert
+- [x] Add QuantizedBert
 - [ ] Upload Pretrained-Models
 
 ## Changelog
+ - 14/05
+   - Added Quantized Bert
  - 27/04
    - Added Bert
    - Renamed the training files to make more sense
