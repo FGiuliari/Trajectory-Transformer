@@ -1,3 +1,4 @@
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/transformer-networks-for-trajectory/trajectory-prediction-on-ethucy)](https://paperswithcode.com/sota/trajectory-prediction-on-ethucy?p=transformer-networks-for-trajectory)
 # Transformer Networks for Trajectory Forecasting
 This is the code for the paper **<a href="https://arxiv.org/abs/2003.08111">Transformer Networks for Trajectory Forecasting</a>**
 
@@ -27,7 +28,7 @@ To train just run the *train_individual.py* with different parameters
 
 example: to train on the data for eth
 ```
-CUDA_VISIBLE_DEVICES python train_individualTF.py --dataset_name eth --name eth --max_epoch --batch_size 100 
+CUDA_VISIBLE_DEVICES=0 python train_individualTF.py --dataset_name eth --name eth --max_epoch 240 --batch_size 100 --name eth_train --factor 1
 ```
 
 ### QuantizedTF
