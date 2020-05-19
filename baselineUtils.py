@@ -9,116 +9,103 @@ import scipy.io
 
 def create_dataset(dataset_folder,dataset_name,val_size,gt,horizon,delim="\t",train=True,eval=False,verbose=False):
 
-        if train==True:
-            datasets_list = os.listdir(os.path.join(dataset_folder,dataset_name, "train"))
-            full_dt_folder=os.path.join(dataset_folder,dataset_name, "train")
-        if train==False and eval==False:
-            datasets_list = os.listdir(os.path.join(dataset_folder, dataset_name, "val"))
-            full_dt_folder = os.path.join(dataset_folder, dataset_name, "val")
-        if train==False and eval==True:
-            datasets_list = os.listdir(os.path.join(dataset_folder, dataset_name, "test"))
-            full_dt_folder = os.path.join(dataset_folder, dataset_name, "test")
+    if train==True:
+        datasets_list = os.listdir(os.path.join(dataset_folder,dataset_name, "train"))
+        full_dt_folder=os.path.join(dataset_folder,dataset_name, "train")
+    if train==False and eval==False:
+        datasets_list = os.listdir(os.path.join(dataset_folder, dataset_name, "val"))
+        full_dt_folder = os.path.join(dataset_folder, dataset_name, "val")
+    if train==False and eval==True:
+        datasets_list = os.listdir(os.path.join(dataset_folder, dataset_name, "test"))
+        full_dt_folder = os.path.join(dataset_folder, dataset_name, "test")
 
 
-        datasets_list=datasets_list
-        data={}
-        data_src=[]
-        data_trg=[]
-        data_seq_start=[]
-        data_frames=[]
-        data_dt=[]
-        data_peds=[]
+    datasets_list=datasets_list
+    data={}
+    data_src=[]
+    data_trg=[]
+    data_seq_start=[]
+    data_frames=[]
+    data_dt=[]
+    data_peds=[]
 
-        val_src = []
-        val_trg = []
-        val_seq_start = []
-        val_frames = []
-        val_dt = []
-        val_peds=[]
+    val_src = []
+    val_trg = []
+    val_seq_start = []
+    val_frames = []
+    val_dt = []
+    val_peds=[]
 
+    if verbose:
+        print("start loading dataset")
+        print("validation set size -> %i"%(val_size))
+
+    for i_dt, dt in enumerate(datasets_list):
         if verbose:
-            print("start loading dataset")
-            print("validation set size -> %i"%(val_size))
+            print("%03i / %03i - loading %s"%(i_dt+1,len(datasets_list),dt))
+        raw_data = pd.read_csv(os.path.join(full_dt_folder, dt), delimiter=delim,
+                                        names=["frame", "ped", "x", "y"],usecols=[0,1,2,3],na_values="?")
 
+        raw_data.sort_values(by=['frame','ped'], inplace=True)
 
-        for i_dt, dt in enumerate(datasets_list):
+        inp,out,info=get_strided_data_clust(raw_data,gt,horizon,1)
+
+        dt_frames=info['frames']
+        dt_seq_start=info['seq_start']
+        dt_dataset=np.array([i_dt]).repeat(inp.shape[0])
+        dt_peds=info['peds']
+
+        if val_size>0 and inp.shape[0]>val_size*2.5:
             if verbose:
-                print("%03i / %03i - loading %s"%(i_dt+1,len(datasets_list),dt))
-            raw_data = pd.read_csv(os.path.join(full_dt_folder, dt), delimiter=delim,
-                                            names=["frame", "ped", "x", "y"],usecols=[0,1,2,3],na_values="?")
+                print("created validation from %s" % (dt))
+            k = random.sample(np.arange(inp.shape[0]).tolist(), val_size)
+            val_src.append(inp[k, :, :])
+            val_trg.append(out[k, :, :])
+            val_seq_start.append(dt_seq_start[k, :, :])
+            val_frames.append(dt_frames[k, :])
+            val_dt.append(dt_dataset[k])
+            val_peds.append(dt_peds[k])
+            inp = np.delete(inp, k, 0)
+            out = np.delete(out, k, 0)
+            dt_frames = np.delete(dt_frames, k, 0)
+            dt_seq_start = np.delete(dt_seq_start, k, 0)
+            dt_dataset = np.delete(dt_dataset, k, 0)
+            dt_peds = np.delete(dt_peds,k,0)
+        elif val_size>0:
+            if verbose:
+                print("could not create validation from %s, size -> %i" % (dt,inp.shape[0]))
 
-            raw_data.sort_values(by=['frame','ped'], inplace=True)
-
-            inp,out,info=get_strided_data_clust(raw_data,gt,horizon,1)
-
-            dt_frames=info['frames']
-            dt_seq_start=info['seq_start']
-            dt_dataset=np.array([i_dt]).repeat(inp.shape[0])
-            dt_peds=info['peds']
-
-
-
-            if val_size>0 and inp.shape[0]>val_size*2.5:
-                if verbose:
-                    print("created validation from %s" % (dt))
-                k = random.sample(np.arange(inp.shape[0]).tolist(), val_size)
-                val_src.append(inp[k, :, :])
-                val_trg.append(out[k, :, :])
-                val_seq_start.append(dt_seq_start[k, :, :])
-                val_frames.append(dt_frames[k, :])
-                val_dt.append(dt_dataset[k])
-                val_peds.append(dt_peds[k])
-                inp = np.delete(inp, k, 0)
-                out = np.delete(out, k, 0)
-                dt_frames = np.delete(dt_frames, k, 0)
-                dt_seq_start = np.delete(dt_seq_start, k, 0)
-                dt_dataset = np.delete(dt_dataset, k, 0)
-                dt_peds = np.delete(dt_peds,k,0)
-            elif val_size>0:
-                if verbose:
-                    print("could not create validation from %s, size -> %i" % (dt,inp.shape[0]))
-
-            data_src.append(inp)
-            data_trg.append(out)
-            data_seq_start.append(dt_seq_start)
-            data_frames.append(dt_frames)
-            data_dt.append(dt_dataset)
-            data_peds.append(dt_peds)
+        data_src.append(inp)
+        data_trg.append(out)
+        data_seq_start.append(dt_seq_start)
+        data_frames.append(dt_frames)
+        data_dt.append(dt_dataset)
+        data_peds.append(dt_peds)
 
 
+    data['src'] = np.concatenate(data_src, 0)
+    data['trg'] = np.concatenate(data_trg, 0)
+    data['seq_start'] = np.concatenate(data_seq_start, 0)
+    data['frames'] = np.concatenate(data_frames, 0)
+    data['dataset'] = np.concatenate(data_dt, 0)
+    data['peds'] = np.concatenate(data_peds, 0)
+    data['dataset_name'] = datasets_list
 
+    mean= data['src'].mean((0,1))
+    std= data['src'].std((0,1))
 
+    if val_size>0:
+        data_val={}
+        data_val['src']=np.concatenate(val_src,0)
+        data_val['trg'] = np.concatenate(val_trg, 0)
+        data_val['seq_start'] = np.concatenate(val_seq_start, 0)
+        data_val['frames'] = np.concatenate(val_frames, 0)
+        data_val['dataset'] = np.concatenate(val_dt, 0)
+        data_val['peds'] = np.concatenate(val_peds, 0)
 
-        data['src'] = np.concatenate(data_src, 0)
-        data['trg'] = np.concatenate(data_trg, 0)
-        data['seq_start'] = np.concatenate(data_seq_start, 0)
-        data['frames'] = np.concatenate(data_frames, 0)
-        data['dataset'] = np.concatenate(data_dt, 0)
-        data['peds'] = np.concatenate(data_peds, 0)
-        data['dataset_name'] = datasets_list
+        return IndividualTfDataset(data, "train", mean, std), IndividualTfDataset(data_val, "validation", mean, std)
 
-        mean= data['src'].mean((0,1))
-        std= data['src'].std((0,1))
-
-        if val_size>0:
-            data_val={}
-            data_val['src']=np.concatenate(val_src,0)
-            data_val['trg'] = np.concatenate(val_trg, 0)
-            data_val['seq_start'] = np.concatenate(val_seq_start, 0)
-            data_val['frames'] = np.concatenate(val_frames, 0)
-            data_val['dataset'] = np.concatenate(val_dt, 0)
-            data_val['peds'] = np.concatenate(val_peds, 0)
-
-            return IndividualTfDataset(data, "train", mean, std), IndividualTfDataset(data_val, "validation", mean, std)
-
-        return IndividualTfDataset(data, "train", mean, std), None
-
-
-
-
-        return IndividualTfDataset(data,"train",mean,std), IndividualTfDataset(data_val,"validation",mean,std)
-
-
+    return IndividualTfDataset(data, "train", mean, std), None
 
 class IndividualTfDataset(Dataset):
     def __init__(self,data,name,mean,std):
@@ -143,12 +130,6 @@ class IndividualTfDataset(Dataset):
                 'peds': self.data['peds'][index],
                 }
 
-
-
-
-
-
-
 def create_folders(baseFolder,datasetName):
     try:
         os.mkdir(baseFolder)
@@ -159,8 +140,6 @@ def create_folders(baseFolder,datasetName):
         os.mkdir(os.path.join(baseFolder,datasetName))
     except:
         pass
-
-
 
 def get_strided_data(dt, gt_size, horizon, step):
     inp_te = []
