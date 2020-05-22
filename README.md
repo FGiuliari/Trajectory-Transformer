@@ -9,6 +9,7 @@ This is the code for the paper **<a href="https://arxiv.org/abs/2003.08111">Tran
   - Pytorch 1.0+
   - Numpy
   - Scipy
+  - Pandas
   - Tensorboard
   - <a href="https://github.com/overshiki/kmeans_pytorch">kmeans_pytorch</a> (included in the project is a modified version)
 #
