@@ -2,7 +2,7 @@ import os
 
 def genScript():
     leaveDatset = [i for i in range(8)] #Replace this with names of the datasets you wish to train, validate, test the model on.
-    filePath = "./batchTraining.sh"
+    filePath = "./batchTraining.sh" #See this file to see the output 
     max_epoch = 100
     val_size = 1 #Change this to implement validation too
 
