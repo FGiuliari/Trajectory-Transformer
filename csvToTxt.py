@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+
 # In[2]:
 
+############Currently, this script converts whole .csv file into 'train' file as well as 'test' file. Edit the code according to your needs.######
 
 import os
 import numpy as np
@@ -11,12 +13,12 @@ import numpy as np
 # In[3]:
 
 
-srcPaths = [f"./data/data_csv_integers/{i}" for i in range(8)]
+srcPaths = [f"./data/data_csv_integers/{i}" for i in range(8)] #Change this to where your dataset is kept
 for i in range(len(srcPaths)):
     srcPaths[i] = [os.path.join(srcPaths[i], p) for p in os.listdir(srcPaths[i])]
 
 
-targetPaths = [f"./data/datasets/{i}_no_val_" for i in range(8)]
+targetPaths = [f"./data/datasets/{i}_no_val_" for i in range(8)] #Target paths of the .txt datasets
 for i in range(len(targetPaths)):
     try:
         os.mkdir(targetPaths[i])
